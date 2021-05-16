@@ -1,0 +1,12 @@
+[
+    {
+        "title":"Example Rewards 1",
+        "items":[
+            {
+                "id":"Item1",
+                "amount":1
+            }
+        ],
+        "icon":"Icon1"
+    }
+]
