@@ -9,3 +9,11 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model GivenRewards {
+  id        Int      @default(autoincrement()) @id
+  earnerId  String   @db.VarChar(36)
+  createdAt DateTime @default(now())
+
+  @@index([earnerId])
+}
