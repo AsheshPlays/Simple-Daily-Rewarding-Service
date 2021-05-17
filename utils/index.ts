@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon';
+import { IClaimableRewards } from '../interfaces'
 
 export default {
     isFunctionClaimed: function(entries : any[], currentDate : DateTime, testDate : DateTime) : boolean {
@@ -16,7 +17,7 @@ export default {
         }
         return false;
     },
-    getClaimableRewards: async function(prisma : PrismaClient, currentDate : DateTime, cycleStart : DateTime, cycleEnd : DateTime, rewards : any[], consecutive : boolean, earnerId : string) : Promise<any[]> {
+    getClaimableRewards: async function(prisma : PrismaClient, currentDate : DateTime, cycleStart : DateTime, cycleEnd : DateTime, rewards : any[], consecutive : boolean, earnerId : string) : Promise<IClaimableRewards[]> {
         const startOfCurrentDate = currentDate.startOf('day')
         const entries = await prisma.givenRewards.findMany({
             where: {
@@ -33,7 +34,7 @@ export default {
             }]
         })
         const count = entries.length
-        const result : any[] = []
+        const result : IClaimableRewards[] = []
         let claimableDate = cycleStart
         let foundClaimableEntry = false
         for (let i = 0; i < rewards.length; i++) {

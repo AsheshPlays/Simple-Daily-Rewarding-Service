@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
 import { DateTime } from 'luxon';
 import utils from './utils'
+import functions from './functions'
 import data from './data.json'
 
 const prisma = new PrismaClient()
@@ -58,6 +59,29 @@ const server = fastify()
         }, async (request, reply) => {
             const params : any = request.params
             const earnerId = params.earnerId
+            // Claim reward
+            const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
+            for (let i = 0; i < claimableRewards.length; i++) {
+                const element = claimableRewards[i]
+                if (element.canClaim) {
+                    // Send rewards
+                    if (functions.sendRewards(prisma, element)) {
+                        // Success, send items
+                        prisma.givenRewards.create({
+                            data: {
+                                earnerId: earnerId,
+                            }
+                        })
+                        reply.code(200).send(element.reward);
+                    } else {
+                        // Internal error occurs when send rewards
+                        reply.code(500).send();
+                    }
+                    break;
+                }
+            }
+            // No rewards found
+            reply.code(404).send();
         })
     })
 
