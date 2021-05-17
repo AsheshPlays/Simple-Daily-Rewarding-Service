@@ -52,13 +52,13 @@ const server = fastify()
             reply.code(200).send(claimableRewards)
         })
 
-        server.post('/claim/:earnerId', {
+        server.post('/claim', {
             preHandler: server.auth([
                 server.verifyBearerAuth!
             ]),
         }, async (request, reply) => {
-            const params : any = request.params
-            const earnerId = params.earnerId
+            const body : any = request.body
+            const earnerId = body.earnerId
             // Claim reward
             const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
             for (let i = 0; i < claimableRewards.length; i++) {
@@ -67,9 +67,10 @@ const server = fastify()
                     // Send rewards
                     if (functions.sendRewards(prisma, element)) {
                         // Success, send items
-                        prisma.givenRewards.create({
+                        await prisma.givenRewards.create({
                             data: {
                                 earnerId: earnerId,
+                                createdAt: currentDate.toJSDate()
                             }
                         })
                         reply.code(200).send(element.reward);
