@@ -58,13 +58,13 @@ const server = fastify()
             })
         })
 
-        server.post('/claim', {
+        server.post('/claim/:earnerId', {
             preHandler: server.auth([
                 server.verifyBearerAuth!
             ]),
         }, async (request, reply) => {
-            const body : any = request.body
-            const earnerId = body.earnerId
+            const params : any = request.params
+            const earnerId = params.earnerId
             // Claim reward
             const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
             for (let i = 0; i < claimableRewards.length; i++) {
