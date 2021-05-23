@@ -17,11 +17,12 @@ const consecutive = Boolean(Number(process.env['CONSECUTIVE']))
 const days = mode == 0 ? 7 : 28
 const currentDate = DateTime.local()
 const startOfMonth = DateTime.local().startOf('month')
-const endOfMonth = DateTime.local().endOf('month');
-const startOfWeek = DateTime.local().startOf('week').minus({days:1})
-const endOfWeek = DateTime.local().endOf('week').minus({days:1})
+const endOfMonth = DateTime.local().endOf('month')
+const startOfWeek = DateTime.local().startOf('week')
+const endOfWeek = DateTime.local().endOf('week')
 const cycleStart = mode == 0 ? startOfWeek : startOfMonth
 const cycleEnd = mode == 0 ? endOfWeek : endOfMonth
+const offset = currentDate.offset
 
 const rewards : any[] = []
 let j = 0
@@ -49,7 +50,12 @@ const server = fastify()
             const earnerId = params.earnerId
             // Get reward list and earn state
             const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
-            reply.code(200).send(claimableRewards)
+            reply.code(200).send({
+                rewards: claimableRewards,
+                cycleStart: cycleStart.toJSDate().getTime(),
+                cycleEnd: cycleEnd.toJSDate().getTime(),
+                offset: offset
+            })
         })
 
         server.post('/claim', {
