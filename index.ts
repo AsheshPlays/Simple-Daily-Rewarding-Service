@@ -71,7 +71,7 @@ const server = fastify()
                 const element = claimableRewards[i]
                 if (element.canClaim) {
                     // Send rewards
-                    if (functions.sendRewards(prisma, element)) {
+                    if (functions.sendRewards(prisma, element, earnerId)) {
                         // Success, send items
                         await prisma.givenRewards.create({
                             data: {
