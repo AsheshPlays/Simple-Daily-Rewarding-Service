@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { IClaimableRewards } from '../interfaces'
 
 export default {
-    isFunctionClaimed: function(entries : any[], currentDate : DateTime, testDate : DateTime) : boolean {
+    isAnyClaimedWithinDate: function(entries : any[], currentDate : DateTime, testDate : DateTime) : boolean {
         const startOfCurrentDate = currentDate.startOf('day')
         const endOfCurrentDate = currentDate.endOf('day')
         for (let j = 0; j < entries.length; j++) {
@@ -41,7 +41,7 @@ export default {
             const reward = rewards[i]
             let isClaimed = false
             if (!consecutive) {
-                isClaimed = this.isFunctionClaimed(entries, currentDate, claimableDate);
+                isClaimed = this.isAnyClaimedWithinDate(entries, currentDate, claimableDate);
             } else {
                 isClaimed = i < count
             }
