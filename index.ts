@@ -11,7 +11,7 @@ import data from './data.json'
 const prisma = new PrismaClient()
 dotenv.config()
 
-const passphrases: string = process.env['PASSPHRASES']!
+const secretKeys: string = process.env['SECRET_KEYS']!
 const mode = Number(process.env['MODE'])
 const consecutive = Boolean(Number(process.env['CONSECUTIVE']))
 const days = mode == 0 ? 7 : 28
@@ -40,7 +40,7 @@ for (let i = 0; i < days; ++i) {
 const server = fastify()
     .register(authPlugin)
     .register(bearerAuthPlugin, {
-        keys: JSON.parse(passphrases),
+        keys: JSON.parse(secretKeys),
         addHook: false,
     })
     .after(() => {
