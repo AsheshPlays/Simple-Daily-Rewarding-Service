@@ -93,7 +93,7 @@ const server = fastify()
     })
 
 
-server.listen(Number(process.env['PORT']), (err, address) => {
+server.listen(Number(process.env['PORT']), String(process.env['ADDRESS']), (err, address) => {
     if (err) {
         console.error(err)
         process.exit(1)
