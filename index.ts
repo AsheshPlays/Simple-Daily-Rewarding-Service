@@ -80,11 +80,12 @@ const server = fastify()
                             }
                         })
                         reply.code(200).send(element.reward);
+                        return;
                     } else {
                         // Internal error occurs when send rewards
                         reply.code(500).send();
+                        return;
                     }
-                    break;
                 }
             }
             // No rewards found
