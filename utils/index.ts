@@ -22,12 +22,10 @@ export default {
         const entries = await prisma.givenRewards.findMany({
             where: {
                 earnerId: earnerId,
-                OR: [{
-                    createdAt: {
-                        gte: cycleStart.toJSDate(),
-                        lte: cycleEnd.toJSDate()
-                    }
-                }],
+                createdAt: {
+                    gte: cycleStart.toJSDate(),
+                    lte: cycleEnd.toJSDate()
+                }
             },
             orderBy: [{
                 createdAt: 'asc'
