@@ -52,6 +52,7 @@ const server = fastify()
             const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
             reply.code(200).send({
                 rewards: claimableRewards,
+                currentDate: currentDate.toJSDate().getTime(),
                 cycleStart: cycleStart.toJSDate().getTime(),
                 cycleEnd: cycleEnd.toJSDate().getTime(),
                 offset: offset
