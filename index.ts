@@ -15,14 +15,34 @@ const secretKeys: string = process.env['SECRET_KEYS']!
 const mode = Number(process.env['MODE'])
 const consecutive = Boolean(Number(process.env['CONSECUTIVE']))
 const days = mode == 0 ? 7 : 28
-const currentDate = DateTime.local()
-const startOfMonth = DateTime.local().startOf('month')
-const endOfMonth = DateTime.local().endOf('month')
-const startOfWeek = DateTime.local().startOf('week')
-const endOfWeek = DateTime.local().endOf('week')
-const cycleStart = mode == 0 ? startOfWeek : startOfMonth
-const cycleEnd = mode == 0 ? endOfWeek : endOfMonth
-const offset = currentDate.offset
+
+function getCurrentDate() {
+    return DateTime.local()
+}
+
+function getStartOfMonth() {
+    return DateTime.local().startOf('month')
+}
+
+function getEndOfMonth() {
+    return DateTime.local().endOf('month')
+}
+
+function getStartOfWeek() {
+    return DateTime.local().startOf('week')
+}
+
+function getEndOfWeek() {
+    return DateTime.local().endOf('week')
+}
+
+function getCycleStart() {
+    return mode == 0 ? getStartOfWeek() : getStartOfMonth()
+}
+
+function getCycleEnd() {
+    return mode == 0 ? getEndOfWeek() : getEndOfMonth()
+}
 
 const rewards : any[] = []
 let j = 0
@@ -48,6 +68,10 @@ const server = fastify()
         server.get('/:earnerId', async (request, reply) => {
             const params : any = request.params
             const earnerId = params.earnerId
+            const currentDate = getCurrentDate()
+            const cycleStart = getCycleStart()
+            const cycleEnd = getCycleEnd()
+            const offset = currentDate.offset
             // Get reward list and earn state
             const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
             reply.code(200).send({
@@ -66,13 +90,16 @@ const server = fastify()
         }, async (request, reply) => {
             const params : any = request.params
             const earnerId = params.earnerId
+            const currentDate = getCurrentDate()
+            const cycleStart = getCycleStart()
+            const cycleEnd = getCycleEnd()
             // Claim reward
             const claimableRewards = await utils.getClaimableRewards(prisma, currentDate, cycleStart, cycleEnd, rewards, consecutive, earnerId)
             for (let i = 0; i < claimableRewards.length; i++) {
                 const element = claimableRewards[i]
                 if (element.canClaim) {
                     // Send rewards
-                    if (functions.sendRewards(prisma, element, earnerId)) {
+                    if (await functions.sendRewards(prisma, element, earnerId)) {
                         // Success, send items
                         await prisma.givenRewards.create({
                             data: {
