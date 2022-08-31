@@ -6,12 +6,13 @@ import * as dotenv from 'dotenv'
 import { DateTime } from 'luxon';
 import utils from './utils'
 import functions from './functions'
-import data from './data.json'
+import fs from 'fs';
 
 const prisma = new PrismaClient()
 dotenv.config()
 
 const secretKeys: string = process.env['SECRET_KEYS']!
+const data = JSON.parse(fs.readFileSync(String(process.env['DATA_FILE_PATH']), 'utf8'));
 const mode = Number(process.env['MODE'])
 const consecutive = Boolean(Number(process.env['CONSECUTIVE']))
 const days = mode == 0 ? 7 : 28
